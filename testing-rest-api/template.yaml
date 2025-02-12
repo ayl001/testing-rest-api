@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  testing-rest-api
+
+  Sample SAM Template for testing-rest-api
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+    Tracing: Active
+    # You can add LoggingConfig parameters such as the Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel. Learn more here https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
+    LoggingConfig:
+      LogFormat: JSON
+  Api:
+    TracingEnabled: true
+Resources:
+  Rest-api:
+  Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      EndpointConfiguration:
+        Type: REGIONAL
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+      - x86_64
+      Events:
+        GetEmployees:
+          Type: Api
+          Properties:
+            Path: /employee
+            Method: get
+            RestApiId:
+              Ref: RestApi
+
+        CreateEmployee:
+          Type: Api
+          Properties:
+            Path: /employee
+            Method: post
+            RestApiId:
+              Ref: RestApi
